@@ -702,7 +702,12 @@ module DataMapper
           if operator.include?('?')
             return operator % column_name, [ value ]
           else
-            return "#{column_name} #{operator} #{value.nil? ? 'NULL' : '?'}", [ value ].compact
+            case comparison.slug
+              when :in
+	        return "#{column_name} #{operator} (#{ ( value.map { |v| v.nil? ? 'NULL' : '?' }).join ',' })", value.compact
+              else
+	        return "#{column_name} #{operator} #{value.nil? ? 'NULL' : '?'}", [ value ].compact
+            end
           end
         end
 
